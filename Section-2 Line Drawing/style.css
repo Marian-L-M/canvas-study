@@ -1,7 +1,5 @@
-#hello-world-canvas {
+#canvas-element {
     border: 1px solid black;
     display: block;
-    width: 600px;
-    height: 300px;
     margin: 0 auto; 
 }
