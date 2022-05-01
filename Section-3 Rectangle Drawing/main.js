@@ -15,5 +15,25 @@ window.onload = () => {
     context.stroke();
     context.fill();
     
+    // No border rect
+    context.fillStyle='green';
+    context.fillRect(300, 200, 200, 200);
 
+    // Border only rect
+    context.lineWidth=3;
+    context.strokeStyle='blue';
+    context.lineJoin='square';
+    context.strokeRect(550, 200, 200, 200);
+
+    // Eraser
+    context.clearRect(100, 100, 200, 200);
+    
+    // Erase entire canvas
+    context.clearRect(0, 0, 1200, 600);
+    
+        
+    
+    
+    
+    
 }
