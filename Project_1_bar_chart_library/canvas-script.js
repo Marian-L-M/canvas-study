@@ -1,12 +1,6 @@
 
 
 window.onload = () => {
-    // // Definitions
-    // const canvas = document.getElementById(targetID);
-    // canvas.width  = canvasWidth;
-    // canvas.height = canvasHeight;
-    // let context = canvas.getContext("2d")
-
 
     // Chart Data
     let min = 1;
@@ -17,14 +11,16 @@ window.onload = () => {
         {label: 'Mar', value: getRandomInt(min, max)},
         {label: 'Apr', value: getRandomInt(min, max)},
         {label: 'May', value: getRandomInt(min, max)}
-    ];
+];
 
+    // Chart Specifications
     const targetID = 'chart';
-    const canvasWidth = 600;
-    const canvasHeight = 450;
+    let canvasWidth = 600;
+    let canvasHeight = 450;
+
 
     // Create chart
-    const chart = new barChart(targetID, canvasWidth, canvasHeight, data);
+    const chart = new BarChart(targetID, canvasWidth, canvasHeight, data);
     
 }
 // Functions
