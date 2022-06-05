@@ -6,23 +6,23 @@ window.onload = function(){
 
     const g = 0.098 // gravity;
 
-    // Large Ball
-    let ball1 = new Ball (50, 'blue');
-    ball1.x = 290;
-    ball1.y = 250;
-    ball1.m = 10;
-    ball1.context = context;
-    
-    // Small Ball
-    let ball2 = new Ball (30, 'green');
-    ball2.x = 800;
-    ball2.y = 250;
-    ball2.m = 6;
-    ball2.context = context;
+    let numOfBalls = 10;
+    let balls = [];
 
-    // Velocity
-    ball1.vx = 6;
-    ball2.vx = -7;
+    for (let i = 0; i < numOfBalls; i++){
+        let radius = getRandomInt(10, 25);
+        let color = createRandomColor();
+        let ball = new Ball(radius);
+        ball.x = getRandomInt(radius, canvas.width - radius);
+        ball.y = getRandomInt(radius, canvas.height - radius);
+        ball.m = radius;
+        ball.c = 'rgb('+ color.r + ',' + color.g + ',' + color.b + ')';
+        ball.context = context;
+        ball.vx = getRandomInt(0, 20) - 10;
+        ball.vy = getRandomInt(0, 20) - 10;
+        ball.draw();
+        balls.push(ball);
+    }
     
     window.requestAnimationFrame(animationLoop);
 
@@ -32,36 +32,11 @@ window.onload = function(){
         context.clearRect(0, 0, canvas.width, canvas.height);
 
         // Update
-        ball1.x += ball1.vx;
-        ball2.x += ball2.vx;
-
-        // Detect Edge Collisions
-        if(ball1.x + ball1.r > canvas.width || ball1.x - ball1.r < 0){
-            ball1.vx *= -1;
-        }
-
-        if(ball2.x + ball2.r > canvas.width || ball2.x - ball2.r < 0){
-            ball2.vx *= -1;
-        }
-
-        // Detect Ball Collisions
-        if(Math.abs(ball1.x - ball2.x) < ball1.r + ball2.r){
-            // Momentum equation
-            let v1 =((ball1.m - ball2.m) * ball1.vx) / (ball1.m + ball2.m);
-                v1 += (2 * ball2.m * ball2.vx) /  (ball1.m + ball2.m);
-               
-            let v2 =((ball2.m - ball1.m) * ball2.vx) / (ball2.m + ball1.m);
-                v2 += (2 * ball1.m * ball1.vx) /  (ball1.m + ball2.m);
-                
-            ball1.vx =v1;
-            ball2.vx =v2;
-        } 
+        moveBalls();
+        checkBallCollisions()
 
         // Draw
-        ball1.draw();
-        ball2.draw();
-
-
+        drawBalls();
 
         // Animate
         window.requestAnimationFrame(animationLoop)
@@ -77,4 +52,85 @@ window.onload = function(){
             window.setTimeout(callback, 1000/60);
         };
     })();
+
+function move(ball) {
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+    checkEdges(ball)
+}
+
+function moveBalls(){
+    for(let i = 0; i < numOfBalls; i++){
+        move(balls[i])
+    }
+}
+
+function drawBalls(){
+    for(let i = 0; i < numOfBalls; i++){
+        balls[i].draw();
+    }
+}
+
+function checkEdges(ball){
+    if(ball.x + ball.r > canvas.width || ball.x - ball.r < 0){
+        ball.vx *= -1;
+    }
+
+    if(ball.y + ball.r > canvas.height || ball.y - ball.r < 0){
+        ball.vy *= -1;
+    }
+}
+
+function isCollided(ball1, ball2) {
+    return (Math.abs(ball1.x - ball2.x) < ball1.r + ball2.r) &&
+           (Math.abs(ball1.y - ball2.y) < ball1.r + ball2.r)
+}
+
+function checkBallCollisions() {
+    for(let i = 0; i < numOfBalls; i++){
+        let ball1 = balls[i];
+        for(let j = i + 1; j< numOfBalls; j++){
+            let ball2 = balls[j];
+
+            if(isCollided(ball1, ball2)){
+                // Horizontal velocity ball1 after collision
+                let vx1 =((ball1.m - ball2.m) * ball1.vx) / (ball1.m + ball2.m);
+                vx1 += (2 * ball2.m * ball2.vx) /  (ball1.m + ball2.m);
+                
+                // Horizontal velocity ball2 after collision
+                let vx2 =((ball2.m - ball1.m) * ball2.vx) / (ball2.m + ball1.m);
+                    vx2 += (2 * ball1.m * ball1.vx) /  (ball1.m + ball2.m);
+                    
+                ball1.vx =vx1;
+                ball2.vx =vx2;
+
+                // Vertical velocity ball1 after collision
+                let vy1 =((ball1.m - ball2.m) * ball1.vy) / (ball1.m + ball2.m);
+                vy1 += (2 * ball2.m * ball2.vy) /  (ball1.m + ball2.m);
+                
+                // Vertical velocity ball2 after collision
+                let vy2 =((ball2.m - ball1.m) * ball2.vy) / (ball2.m + ball1.m);
+                    vy2 += (2 * ball1.m * ball1.vy) /  (ball1.m + ball2.m);
+                    
+                ball1.vy =vy1;
+                ball2.vy =vy2;
+            }
+        }
+    }
+}
+
+
+// Random number generators
+function getRandomInt (min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
+function createRandomColor() {
+    let red = getRandomInt(0, 257);
+    let green = getRandomInt(0, 257);
+    let blue = getRandomInt(0, 257);
+    return {r: red, g:green, b: blue};
 };
+}
