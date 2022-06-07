@@ -6,7 +6,7 @@ window.onload = function(){
 
     const g = 0.098 // gravity;
 
-    let numOfBalls = 10;
+    let numOfBalls = 20;
     let balls = [];
 
     for (let i = 0; i < numOfBalls; i++){
