@@ -8,9 +8,9 @@ window.onload = function(){
     const context = canvas.getContext("2d");
 
     // Key Events (Classic Javascript)
-    // keydown
-    // keypress
-    // keyup
+    // keydown (press)
+    // keypress (hold)
+    // keyup (release)
 
     // Key-down -> log which character is pressed (Here event -> to get the character itself: event.key; event.keyCode is a numeric value (depreciated))
     // https://stackoverflow.com/questions/35394937/keyboardevent-keycode-deprecated-what-does-this-mean-in-practice
