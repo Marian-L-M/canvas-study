@@ -3,54 +3,82 @@ window.onload = function(){
     //　Definitions
     const canvas = document.getElementById("le-canvas");
     const context = canvas.getContext("2d");
+    const boundings = canvas.getBoundingClientRect();
 
-    const g = 0.098 // gravity
-    let mouseX = 0;
-    let mouseY = 0;
+    // Specs
+    let balls = 5;
+    let ballsArr = [];
+    let currentBall = []
 
-    // Ball
-    let ball = new Ball(25, 'blue');
-    ball.x = 400;
-    ball.y = 80;
-    ball.context = context;
+    // Create Balls
+    for(let i = 0; i < balls; i++) {
+        let radius = getRandomInt(25, 50);
+        let randColor = createRandomRGBColor();
+        let ballColor = 'rgb(' + randColor.r + ', '+ randColor.g + ', '+ randColor.b + ')';
+        let ball = new Ball(radius, ballColor);
+        ball.context = context;
+        ball.x = getRandomInt(radius, canvas.width - radius);
+        ball.y = getRandomInt(radius, canvas.height - radius);
+        ballsArr.push(ball);
+    }
 
-    // Mouse listener
+    drawBalls();
+
+    function drawBalls(){
+        // Clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        
+        // Draw Balls
+        for(let i = 0; i < balls; i++) {
+            ballsArr[i].draw();
+        }
+    }
+
+    // Loops over all balls in array to check if click area is within radius of any ball
+    function isHitOnBall(mx, my) {
+        for(let i = balls - 1; i >= 0; i--){
+            if(Math.sqrt(Math.pow(mx - ballsArr[i].x , 2) + Math.pow(my - ballsArr[i].y , 2)) < ballsArr[i].r){
+                currentBall = ballsArr[i];
+                break
+            }
+        };
+    }
+
+
+    // Mouse Event Handlers
+    canvas.addEventListener('mousedown', (e) => {
+        let mouseDownX = e.clientX - boundings.left;
+        let mouseDownY = e.clientY - boundings.top;
+        isHitOnBall(mouseDownX, mouseDownY);
+    });
+
     canvas.addEventListener('mousemove', (e) => {
-        const boundings = canvas.getBoundingClientRect(); // Avoid issue that mouse position is set according to window not canvas
-        mouseX = e.clientX - boundings.left;
-        mouseY = e.clientY - boundings.top;
-    })
+        let mouseMoveX = e.clientX - boundings.left;
+        let mouseMoveY = e.clientY - boundings.top;
+        if(currentBall) {
+            currentBall.x = mouseMoveX;
+            currentBall.y = mouseMoveY;
 
-    // window.requestAnimationFrame(animationLoop);
+            drawBalls();
+        }
+    });
+
+    canvas.addEventListener('mouseup', (e) => {
+        currentBall = null;
+    });
+
+};
 
 
-    // function animationLoop() {
+function getRandomInt(min, max) {
+    min  = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor((Math.random() * (max - min)) + min)
+};
 
-    //     // Clear Canvas
-    //     context.clearRect(0, 0, canvas.width, canvas.height);
-
-    //     // Update
-    //     ball.vy += + g;
-    //     ball.y += ball.vy;
-
-    //     if (Math.sqrt(Math.pow(ball.x - mouseX, 2) + Math.pow(ball.y - mouseY, 2)) < ball.r) {
-    //         ball.vy *= -1;
-    //     }
-
-    //     // Draw
-    //     ball.draw();
-
-    //     // Animate
-    //     window.requestAnimationFrame(animationLoop)
-    // };
-
-    // window.requestAnimationFrame = (function(){
-    //     return window.requestAnimationFrame
-    //             window.webkitRequestAnimationFrame ||
-    //             window.mozRequestAnimationFrame ||
-    //             window.msRequestAnimationFrame ||
-    //             function(callback){
-    //                 window.setTimeout(callback, 1000/60);
-    //             };
-    // })();
+function createRandomRGBColor() {
+    let red = getRandomInt(0, 257);
+    let green = getRandomInt(0, 257);
+    let blue = getRandomInt(0, 257);
+    return {r: red, g:green, b: blue};
 };
