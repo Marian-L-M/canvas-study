@@ -21,6 +21,43 @@ function FlappyMonster(canvas) {
 
     // Game State
     game.currentState = INITIAL;
+
+    // Bind Events
+    game.bindEvents();
+
+    // Create Game Objects
+    game.createObjects();
+};
+
+FlappyMonster.prototype.createObjects =function(){
+    // Base
+    let game = this;
+}
+
+FlappyMonster.prototype.bindEvents = function() {
+    // Base
+    let game = this;
+
+    game.canvas.addEventListener('click', (e) => {
+        switch (game.currentState) {
+            case INITIAL:
+                game.currentState = GAME_PLAYING;
+                break;
+            case GAME_PLAYING:
+                break;
+        };
+    });
+    
+    // Key Listener
+    window.addEventListener('keydown', (e) => {
+        switch (game.currentState) {
+            case GAME_OVER:
+                if(e.key === "r") {
+                    game.currentState = GAME_PLAYING;
+                }
+                break;
+        };
+    });
 }
 
 FlappyMonster.prototype.start = function() {
@@ -54,6 +91,12 @@ FlappyMonster.prototype.runGameLoop = function() {
             game.drawGameOverScreen()
             break
     }
+
+    // Start Game
+    window.requestAnimationFrame(function() {
+        game.runGameLoop();
+    });
+    
 };
 
 FlappyMonster.prototype.drawInitialScreen   = function(){
@@ -69,7 +112,7 @@ FlappyMonster.prototype.drawInitialScreen   = function(){
         // Text
         game.context.fillStyle = 'white';
         game.context.font = '36px Arial'
-        game.context.fillText('INITIAL', game.canvas.width / 2 - 100, game.canvas.height / 2);
+        game.context.fillText('CLICK TO START', game.canvas.width / 2 - 100, game.canvas.height / 2);
         
 
 };
@@ -105,7 +148,9 @@ FlappyMonster.prototype.drawGameOverScreen = function(){
         // Text
         game.context.fillStyle = 'white';
         game.context.font = '36px Arial'
-        game.context.fillText('GAME OVER', game.canvas.width / 2 - 100, game.canvas.height / 2);
+        game.context.fillText('GAME OVER :(', game.canvas.width / 2 - 100, game.canvas.height / 2);
         
+        game.context.font = '24px Arial'
+        game.context.fillText('Press R to Restart', game.canvas.width / 2 - 70, game.canvas.height / 2 + 50);
 
 };
