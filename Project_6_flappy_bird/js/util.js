@@ -23,7 +23,7 @@ window.requestAnimFrame = (function(){
 window.getRandomInt = function (min, max) {
     min = Math.ceil(min);
     max = Math.floor(max);
-    return Math.floor(math.random() * (max - min)) + min;
+    return Math.floor(Math.random() * (max - min)) + min;
 };
 
 // Random color generator
