@@ -74,11 +74,24 @@ FlappyMonster.prototype.bindEvents = function() {
         switch (game.currentState) {
             case GAME_OVER:
                 if(e.key === "r") {
+                    game.reset();
                     game.currentState = GAME_PLAYING;
                 }
                 break;
         };
     });
+};
+
+FlappyMonster.prototype.reset = function() {
+    // Base
+    let game = this;
+
+    // Reset States
+    game.gameScore.start = new Date();
+    game.gameScore.score = 0;
+    game.wallFactory.walls = [];
+    game.monster.x = 115;
+    game.monster.y = 115;
 };
 
 FlappyMonster.prototype.start = function() {
@@ -157,6 +170,50 @@ FlappyMonster.prototype.drawGamePlayingScreen = function(){
 
     // Draw Monster
     game.monster.draw()
+
+    // Collision Check
+    game.checkCollisions();
+};
+
+FlappyMonster.prototype.checkCollisions = function() {
+    // Base
+    let game = this;
+
+    let walls = game.wallFactory.walls;
+
+    for (let i = 0; i < walls.length; i++){
+        if(game.isCollided(game.monster, walls[i])){
+            game.currentState = GAME_OVER;
+        }
+    }
+};
+
+FlappyMonster.prototype.isCollided = function(monster, wall) {
+    // Base
+    let game = this;
+
+    let isCollided = true;
+
+    // Monster Coordinates
+    let monsterTop = game.monster.y;
+    let monsterBottom = game.monster.y + game.monster.h;
+    let monsterRight = game.monster.x + game.monster.w;
+    let monsterLeft = game.monster.x;
+
+    // Wall Coordinates
+     let wallTop = wall.y + wall.h + wall.gap; // top of lower wall
+     let wallBottom = wall.y + wall.h // bottom of upper wall
+     let wallRight = wall.x + wall.w;
+     let wallLeft = wall.x;
+
+
+     if((monsterBottom < wallTop && monsterTop > wallBottom)
+        || (monsterLeft > wallRight)    
+        || (monsterRight < wallLeft)){
+        isCollided = false;
+     }
+
+     return isCollided;
 };
 
 FlappyMonster.prototype.drawWalls = function() {
@@ -223,6 +280,10 @@ FlappyMonster.prototype.drawGameOverScreen = function(){
 
         // Text
         game.context.fillStyle = 'white';
+
+        game.context.font = '54px Arial'
+        game.context.fillText('Your Score: ' + game.gameScore.score, game.canvas.width / 2 - 160, game.canvas.height / 2 - 100);
+        
         game.context.font = '36px Arial'
         game.context.fillText('GAME OVER :(', game.canvas.width / 2 - 100, game.canvas.height / 2);
         
